@@ -1,3 +1,5 @@
 import { io } from "socket.io-client";
 
-export const socket = io(process.env.URL);
+export const initializeSocket = (url) => {
+  return io(url);
+};

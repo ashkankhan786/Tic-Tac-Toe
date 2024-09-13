@@ -7,6 +7,8 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 const server = http.createServer(app);
+console.log("POrt : " + process.env.PORT);
+console.log("Origin Url :" + process.env.ORIGIN_URL);
 
 const port = process.env.PORT || 3000;
 
