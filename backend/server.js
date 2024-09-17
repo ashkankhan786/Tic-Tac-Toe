@@ -102,6 +102,27 @@ io.on("connection", (socket) => {
             board: games[GameID].board,
             turn: games[GameID].turn,
           });
+          let winner = null;
+          winningCombinations.forEach((combination) => {
+            const [a, b, c] = combination;
+            if (
+              games[GameID].board[a] &&
+              games[GameID].board[a] === games[GameID].board[b] &&
+              games[GameID].board[a] === games[GameID].board[c]
+            ) {
+              winner = games[GameID].board[a];
+            }
+          });
+
+          if (winner) {
+            io.to(games[GameID].X).emit("gameOver", {
+              winner: winner === "X" ? "X" : "O",
+            });
+            io.to(games[GameID].O).emit("gameOver", {
+              winner: winner === "X" ? "X" : "O",
+            });
+            return;
+          }
         }
       }
     } catch (error) {

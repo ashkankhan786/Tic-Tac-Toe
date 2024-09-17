@@ -1,7 +1,7 @@
 import React from "react";
 import Square from "../components/Square/Square";
 
-const Game = ({ board, onSquareClick, value }) => {
+const Game = ({ board, onSquareClick, value, winner }) => {
   return (
     <div>
       <h2 className="text-center mb-5 font-bold text-cyan-200">
@@ -13,6 +13,7 @@ const Game = ({ board, onSquareClick, value }) => {
             key={index}
             value={square}
             onClick={() => onSquareClick(index)}
+            winner={winner}
           />
         ))}
       </div>
