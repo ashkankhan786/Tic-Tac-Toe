@@ -42,34 +42,70 @@ io.on("connection", (socket) => {
     let firstPlayer = Object.keys(players)[0];
     let secondPlayer = socket.id;
     let gameID = `Game-${Date.now()}`;
+    console.log(`Game has started ... game id : ${gameID}`);
+    console.log(`Player id : ${firstPlayer}`);
+
     games[gameID] = {
       X: firstPlayer,
       O: secondPlayer,
       board: Array(9).fill(null),
       turn: firstPlayer,
     };
-    io.to(firstPlayer).emit("message", "X");
-    io.to(socket.id).emit("message", "O");
+    io.to(firstPlayer).emit("message", {
+      char: "X",
+      gameID: gameID,
+      turn: games[gameID].turn,
+    });
+    io.to(socket.id).emit("message", {
+      char: "O",
+      gameID: gameID,
+      turn: games[gameID].turn,
+    });
+    console.log(games);
+
     delete players[firstPlayer];
   }
 
-  socket.on("move", ({ gameID, index }) => {
-    if (games[gameID].turn != socket.id) return;
-    else {
-      if (games[gameID].board[index] != null) {
-        socket.emit("errorMessage", "Invalid Move");
+  socket.on("move", ({ GameID, index }) => {
+    console.log(`Game id from frontend is : ${GameID} and index is : ${index}`);
+
+    try {
+      if (games[GameID].turn != socket.id) {
+        console.log(`Socket id : ${socket.id}`);
+
+        console.log("Not your turn");
+        console.log(games);
+
+        return;
       } else {
-        games[gameID].board[index] =
-          games[gameID]["X"] === socket.id ? "X" : "O";
-        games[gameID].turn =
-          games[gameID].turn === games[gameID]["X"]
-            ? games[gameID]["O"]
-            : games[gameID]["X"];
-        io.to(games[gameID]["X"]).emit("moveMade", {
-          board: games[gameID].board,
-          turn: games[gameID].turn,
-        });
+        if (games[GameID]?.board[index] != null) {
+          console.log("Box not empty");
+
+          socket.emit("errorMessage", "Invalid Move");
+        } else {
+          console.log("Making the move");
+          console.log(games);
+
+          games[GameID].board[index] =
+            games[GameID].X === socket.id ? "X" : "O";
+          console.log(games);
+
+          games[GameID].turn =
+            games[GameID].turn === games[GameID].X
+              ? games[GameID].O
+              : games[GameID].X;
+          io.to(games[GameID].X).emit("moveMade", {
+            board: games[GameID].board,
+            turn: games[GameID].turn,
+          });
+          io.to(games[GameID].O).emit("moveMade", {
+            board: games[GameID].board,
+            turn: games[GameID].turn,
+          });
+        }
       }
+    } catch (error) {
+      console.log(`Error while making the move ${error}`);
     }
   });
 
