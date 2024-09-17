@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { initializeSocket } from "./socket";
 import Landing from "./pages/Landing";
 import Game from "./pages/Game";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const App = () => {
   const [char, setChar] = useState(null);
@@ -73,6 +74,15 @@ const App = () => {
       socketRef.current.emit("move", { GameID, index });
     }
   };
+  const resetGame = () => {
+    setChar(null);
+    setPlay(false);
+    setGame(false);
+    setTurn(false);
+    setGameID("");
+    setWinner(null);
+    setBoard(Array(9).fill(null));
+  };
 
   useEffect(() => {
     return () => {
@@ -82,12 +92,28 @@ const App = () => {
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-slate-700 flex flex-col relative justify-center items-center">
+      <div className="top-0 absolute w-screen bg-slate-400 py-2 flex justify-center items-center">
+        <h1 className="text-center text-gray-50 font-bold text-2xl">
+          TIC TAC TOE
+        </h1>
+      </div>
       {winner && (
-        <div className="bg-gray-900 p-4 px-8 rounded-md shadow-white shadow-lg absolute top-12 flex flex-col gap-3 ">
-          <h1 className="text-white font-medium ">Game Over</h1>
-          <h1 className="text-white font-bold text-xl text-center">
-            {winner} won !!
-          </h1>
+        <div className="absolute top-14 flex flex-col gap-6 items-center">
+          <div className="bg-gray-900 mt-2 p-2 px-8 rounded-md shadow-white shadow-md  flex flex-col gap-3 ">
+            <h1 className="text-white font-medium ">Game Over</h1>
+            <h1 className="text-white font-bold text-xl text-center">
+              {winner} won !!
+            </h1>
+          </div>
+          <div>
+            <button
+              className="bg-slate-800 text-white font-semibold px-4 py-2 rounded-md flex items-center justify-center gap-2"
+              onClick={resetGame}
+            >
+              <IoMdArrowRoundBack />
+              <h1>Back</h1>
+            </button>
+          </div>
         </div>
       )}
 
